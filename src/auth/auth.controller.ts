@@ -1,23 +1,34 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
-  async login(@Body() body: { username: string; password: string }) {
-    return await this.authService.login(body.username, body.password);
+  @ApiOperation({ summary: 'Login to get access token' })
+  async login(@Body() loginDto: LoginDto) {
+    return await this.authService.login(loginDto.username, loginDto.password);
   }
 
   @Post('forget-password')
-  async forgotPassword(@Body('email') email: string) {
-    return await this.authService.forgotPassword(email);
+  @ApiOperation({ summary: 'Send reset code to email' })
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return await this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
   @Post('reset-password')
-  async resetPassword(
-    @Body() body: { email: string; code: string; newpassword: string },
-  ) {
-    return await this.authService.resetPassword(body.email,body.code,body.newpassword,); }
+  @ApiOperation({ summary: 'Reset password using code' })
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return await this.authService.resetPassword(
+      resetPasswordDto.email,
+      resetPasswordDto.code,
+      resetPasswordDto.newpassword,
+    );
+  }
 }

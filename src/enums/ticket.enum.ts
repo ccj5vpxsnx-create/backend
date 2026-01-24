@@ -1,16 +1,41 @@
-export enum TicketType {
-  INCIDENT = 'incident',
-  DEMANDE = 'demande',
+export enum TicketStatus {
+  NEW = 'new',
+  ASSIGNED = 'assigned',
+  IN_PROGRESS = 'in_progress',
+  WAITING = 'waiting',
+  RESOLVED = 'resolved',
+  CLOSED = 'closed',
 }
 
-export enum TicketStatus {
-  NOUVEAU = 'nouveau',
-  EN_COURS = 'en_cours',
-  RESOLU = 'resolu',
+export enum TicketType {
+  INCIDENT = 'incident',
+  REQUEST = 'request',
+  PROBLEM = 'problem',
+  CHANGE = 'change',
 }
 
 export enum TicketPriority {
-  FAIBLE = 'faible',
-  MOYENNE = 'moyenne',
-  HAUTE = 'haute',
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
+
+export enum TicketUrgency {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
+export enum TicketImpact {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
+export enum TicketSource {
+  HELPDESK = 'helpdesk',
+  EMAIL = 'email',
+  PHONE = 'phone',
+  PORTAL = 'portal',
 }

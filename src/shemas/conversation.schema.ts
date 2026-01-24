@@ -8,34 +8,25 @@ export type ConversationDocument = Conversation & Document;
 export class Conversation {
   _id: Types.ObjectId;
 
-  @Prop({ required: true, enum: Object.values(ConversationType) })
+  @Prop({ enum: Object.values(ConversationType), required: true })
   type: ConversationType;
 
   @Prop()
   name?: string;
 
-  @Prop({ 
-    type: [{ 
-      userId: { type: Types.ObjectId, required: true },
-      userType: { type: String, required: true }
-    }], 
-    required: true 
-  })
-  participants: Array<{ userId: Types.ObjectId; userType: string }>;
+  @Prop({ type: Types.ObjectId, ref: 'Ticket' })
+  ticketId?: Types.ObjectId;
 
-  @Prop({
-    type: { 
-      userId: { type: Types.ObjectId, required: true },
-      userType: { type: String, required: true }
-    },
-    required: true
-  })
-  createdBy: { userId: Types.ObjectId; userType: string };
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], required: true })
+  participants: Types.ObjectId[];
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  createdBy: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Message' })
   lastMessage?: Types.ObjectId;
-  
-  
+
+
   @Prop({
     type: {
       icon: { type: String },
@@ -46,7 +37,7 @@ export class Conversation {
     icon?: string;
     description?: string;
   };
-  
+
   @Prop({ type: Date })
   lastActivity?: Date;
 

@@ -1,39 +1,75 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
-export class PutTicketDto { 
-  @IsNotEmpty()
-    @IsString()
-    title: string;
+import { IsString, IsNotEmpty, IsOptional, IsEnum, IsMongoId, ValidateIf } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  TicketStatus,
+  TicketType,
+  TicketPriority,
+  TicketUrgency,
+  TicketImpact,
+  TicketSource,
+} from '../enums/ticket.enum';
 
-  @IsNotEmpty()
-    @IsString()
-    description: string;
-
+export class PutTicketDto {
+  @ApiPropertyOptional({ description: 'Title of the ticket' })
   @IsOptional()
-    @IsString()
-    type?: string;
+  @IsString()
+  title?: string;
 
+  @ApiPropertyOptional({ description: 'Description of the ticket' })
   @IsOptional()
-    @IsString()
-    status?: string;
+  @IsString()
+  description?: string;
 
+  @ApiPropertyOptional({ enum: TicketType })
   @IsOptional()
-    @IsString()
-    category?: string;
+  @IsEnum(TicketType)
+  type?: TicketType;
 
+  @ApiPropertyOptional({ enum: TicketStatus })
   @IsOptional()
-    @IsString()
-    source?: string;
+  @IsEnum(TicketStatus)
+  status?: TicketStatus;
 
+  @ApiPropertyOptional({ description: 'Category ID' })
   @IsOptional()
-    @IsString()
-    urgency?: string;
+  @ValidateIf((o) => o.category !== '')
+  @IsMongoId()
+  category?: string;
 
-  
+  @ApiPropertyOptional({ enum: TicketSource })
   @IsOptional()
-    @IsString()
-    priority?: string;
+  @IsEnum(TicketSource)
+  source?: TicketSource;
 
+  @ApiPropertyOptional({ enum: TicketUrgency })
   @IsOptional()
-    @IsString()
-    location?: string;
+  @IsEnum(TicketUrgency)
+  urgency?: TicketUrgency;
+
+  @ApiPropertyOptional({ enum: TicketImpact })
+  @IsOptional()
+  @IsEnum(TicketImpact)
+  impact?: TicketImpact;
+
+  @ApiPropertyOptional({ enum: TicketPriority })
+  @IsOptional()
+  @IsEnum(TicketPriority)
+  priority?: TicketPriority;
+
+  @ApiPropertyOptional({ description: 'Location' })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @ApiPropertyOptional({ description: 'Related Ticket ID' })
+  @IsOptional()
+  @ValidateIf((o) => o.relatedTicket !== '')
+  @IsMongoId()
+  relatedTicket?: string;
+
+  @ApiPropertyOptional({ description: 'Assigned Technician ID' })
+  @IsOptional()
+  @ValidateIf((o) => o.technicianId !== '')
+  @IsMongoId()
+  technicianId?: string;
 }

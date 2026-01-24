@@ -1,52 +1,72 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import {
+  TicketStatus,
+  TicketType,
+  TicketPriority,
+  TicketUrgency,
+  TicketImpact,
+  TicketSource,
+} from '../enums/ticket.enum';
+import { Category } from './category.shema';
 
 export type TicketDocument = Ticket & Document;
 
 @Schema({ timestamps: true })
 export class Ticket {
 
-  @Prop({ required: true })
+
+
+  @Prop({ required: true, trim: true })
   title: string;
 
   @Prop({ required: true })
   description: string;
 
-  @Prop()
-  type?: string;
+  @Prop({ enum: TicketType, required: true })
+  type: TicketType;
 
-  @Prop()
-  status?: string;
+  @Prop({ enum: TicketStatus, default: TicketStatus.NEW })
+  status: TicketStatus;
 
-  @Prop()
-  category?: string;
+  // Linked Category Entity
+  @Prop({ type: Types.ObjectId, ref: 'Category' })
+  category?: Types.ObjectId;
 
-  @Prop()
-  source?: string;
+  @Prop({ enum: TicketSource, default: TicketSource.HELPDESK })
+  source: TicketSource;
 
-  @Prop()
-  urgency?: string;
+  @Prop({ enum: TicketUrgency, default: TicketUrgency.MEDIUM })
+  urgency: TicketUrgency;
 
-  @Prop()
-  impact?: string;
+  @Prop({ enum: TicketImpact, default: TicketImpact.MEDIUM })
+  impact: TicketImpact;
 
-  @Prop()
-  priority?: string;
+  @Prop({ enum: TicketPriority, default: TicketPriority.MEDIUM })
+  priority: TicketPriority;
+
 
   @Prop()
   location?: string;
 
-  @Prop({
-    type: {
-      userId: { type: Types.ObjectId, required: true },
-      userType: { type: String, required: true },
-    },
-    required: true,
-  })
-  requester: {
-    userId: Types.ObjectId;
-    userType: string;
-  };
+
+  // Ticket lié (parent ou autre)
+  @Prop({ type: Types.ObjectId, ref: 'Ticket' })
+  relatedTicket?: Types.ObjectId;
+
+
+  // Client (demandeur)
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  clientId?: Types.ObjectId;
+
+  // Technicien assigné
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  technicianId?: Types.ObjectId;
+
+  // Créateur du ticket (peut être client, admin, système, etc.)
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  requester: Types.ObjectId;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
+
