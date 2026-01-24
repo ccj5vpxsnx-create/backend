@@ -4,17 +4,13 @@ import { CreateTicketDto } from './create-ticket.dto';
 import { PutTicketDto } from './PutTicket.dto';
 import { QueryTicketDto } from './query-ticket.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-@ApiTags('tickets')
-@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('tickets')
 export class TicketsController {
     constructor(private readonly ticketsService: TicketsService) { }
 
     @Post()
-    @ApiOperation({ summary: 'Create a new ticket' })
     create(@Body() createTicketDto: CreateTicketDto, @Req() req) {
         // requester is always the person logged in (unless explicitly overridden by admin)
         if (!createTicketDto.requester) {
@@ -36,7 +32,6 @@ export class TicketsController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'Get all tickets with filters and pagination' })
     findAll(@Query() query: QueryTicketDto, @Req() req) {
         return this.ticketsService.findAll(query, req.user.userId, req.user.type);
     }

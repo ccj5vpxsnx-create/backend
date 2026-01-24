@@ -6,7 +6,6 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { CategoriesModule } from './categories/categories.module';
-import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { SeedModule } from './seed/seed.module';
     MessagesModule,
     TicketsModule,
     CategoriesModule,
-    SeedModule,
   ],
   controllers: [],
   providers: [],
