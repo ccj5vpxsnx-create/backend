@@ -12,23 +12,25 @@ export class TicketsController {
 
     @Post()
     create(@Body() createTicketDto: CreateTicketDto, @Req() req) {
-        // requester is always the person logged in (unless explicitly overridden by admin)
         if (!createTicketDto.requester) {
             createTicketDto.requester = req.user.userId;
         }
 
-        // Logic for clientId:
-        // 1. If it's a regular user ('user' or 'client'), we force THEM as the clientId
+        
         if (req.user.type === 'user' || req.user.type === 'client') {
             createTicketDto.clientId = req.user.userId;
         }
-        // 2. If it's an Admin/Technician, we only assign them as clientId if they left it blank
-        // (This allows Admin to create a ticket without any client ID if they want)
+      
         else if (!createTicketDto.clientId && req.user.type !== 'admin' && req.user.type !== 'superadmin') {
             createTicketDto.clientId = req.user.userId;
         }
 
         return this.ticketsService.createTicket(createTicketDto);
+    }
+
+    @Get('stats')
+    getStats() {
+        return this.ticketsService.getStats();
     }
 
     @Get()

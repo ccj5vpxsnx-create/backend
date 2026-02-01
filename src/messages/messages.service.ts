@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ConversationsService } from '../conversations/conversations.service';
@@ -10,31 +10,45 @@ import { QueryMessageDto } from './query-message.dto';
 @Injectable()
 export class MessagesService {
   constructor(
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel(Message.name)
+    private messageModel: Model<MessageDocument>,
     private readonly conversationsService: ConversationsService,
-  ) { }
+  ) {}
 
   async sendMessage(dto: CreateMessageDto) {
+    if (!Types.ObjectId.isValid(dto.conversationId)) {
+      throw new BadRequestException('Invalid conversationId');
+    }
+
+    
     const message = new this.messageModel({
       conversationId: new Types.ObjectId(dto.conversationId),
       sender: new Types.ObjectId(dto.sender),
       content: dto.content,
       status: MessageStatus.SENT,
     });
+
     const savedMessage = await message.save();
 
     await this.conversationsService.updateLastMessage(
       dto.conversationId,
-      savedMessage._id
+      savedMessage._id,
     );
 
     return savedMessage;
   }
+
   async getMessages(conversationId: string, query: QueryMessageDto) {
+    if (!Types.ObjectId.isValid(conversationId)) {
+      throw new BadRequestException('Invalid conversationId');
+    }
+
     const { page = 1, limit = 50 } = query;
     const skip = (page - 1) * limit;
 
-    const filter = { conversationId: new Types.ObjectId(conversationId) };
+    const filter = {
+      conversationId: new Types.ObjectId(conversationId),
+    };
 
     const [items, total] = await Promise.all([
       this.messageModel

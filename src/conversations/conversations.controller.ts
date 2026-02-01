@@ -26,4 +26,8 @@ export class ConversationsController {
   getConversationByTicketId(@Param('ticketId') ticketId: string) {
     return this.conversationsService.getConversationByTicketId(ticketId);
   }
+  @Post('admin-client')
+async createOrGetAdminClientConversation(@Req() req) {
+  return this.conversationsService.createOrGetAdminClientConversation(req.user.userId);
+}
 }

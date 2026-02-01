@@ -5,9 +5,11 @@ import { CreateConversationDto } from './create-conversation.dto';
 import { Conversation, ConversationDocument } from 'src/shemas/conversation.schema';
 import { QueryConversationDto } from './query-conversation.dto';
 import { Ticket, TicketDocument } from 'src/shemas/ticket.shema';
+import { ConversationType } from 'src/enums/Conversation-Type.enum';
 
 @Injectable()
 export class ConversationsService {
+  userModel: any;
   constructor(
     @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
@@ -86,4 +88,39 @@ export class ConversationsService {
       .populate('ticketId')
       .exec();
   }
+  // ... imports existants ...
+
+async createOrGetAdminClientConversation(clientId: string): Promise<ConversationDocument> {
+  // On cherche si le client a déjà une conversation avec un admin
+  const existing = await this.conversationModel.findOne({
+    type: ConversationType.ADMIN_CLIENT,
+    participants: { $all: [new Types.ObjectId(clientId)] },
+    isDeleted: false,
+  }).populate('participants');
+
+  if (existing) {
+    return existing;
+  }
+
+  // Sinon on en crée une nouvelle
+  // On prend un admin quelconque (le premier trouvé)
+  const admin = await this.userModel.findOne({ type: 'admin' }).select('_id');
+
+  if (!admin) {
+    throw new NotFoundException('Aucun administrateur disponible');
+  }
+
+  const conversation = new this.conversationModel({
+    type: ConversationType.ADMIN_CLIENT,
+    name: `Discussion avec l'admin`,
+    participants: [
+      new Types.ObjectId(clientId),
+      admin._id
+    ],
+    createdBy: new Types.ObjectId(clientId),
+    ticketId: null,
+  });
+
+  return conversation.save();
+}
 }

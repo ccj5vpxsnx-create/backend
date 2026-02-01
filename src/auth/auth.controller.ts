@@ -13,6 +13,11 @@ export class AuthController {
     return await this.authService.login(loginDto.username, loginDto.password);
   }
 
+  @Post('verify-code')
+  async verifyCode(@Body() body: { email: string; code: string }) {
+    return await this.authService.verifyCode(body.email, body.code);
+  }
+
   @Post('forget-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return await this.authService.forgotPassword(forgotPasswordDto.email);
@@ -23,7 +28,7 @@ export class AuthController {
     return await this.authService.resetPassword(
       resetPasswordDto.email,
       resetPasswordDto.code,
-      resetPasswordDto.newpassword,
+      resetPasswordDto.newPassword,
     );
   }
 }

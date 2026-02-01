@@ -12,7 +12,7 @@ export class User {
   password: string;
 
   @Prop({
-    enum: ['superadmin', 'admin', 'technician', 'user'],
+    enum: ['client', 'admin', 'technician', 'user'],
     default: 'user',
   })
   type: string;

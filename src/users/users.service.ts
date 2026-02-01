@@ -19,7 +19,6 @@ export class UsersService {
     if (userdejafait) {
       throw new HttpException('Username already exists', HttpStatus.BAD_REQUEST,);
     }
-
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const newUser = new this.userModel({
       username: createUserDto.username,

@@ -8,12 +8,14 @@ import { EmailService } from 'src/mail/email.service';
 
 @Injectable()
 export class AuthService {
+ 
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
   ) {}
+
   async login(username: string, password: string) {
     const user = await this.userModel.findOne({ username });
     if (!user) {
@@ -46,7 +48,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetCode = resetCode;
     await user.save();
 
@@ -60,13 +62,29 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
+    if (!user.resetCode) {
+      throw new UnauthorizedException('No reset code found');
+    }
     if (user.resetCode !== code) {
       throw new UnauthorizedException('Invalid reset code');
     }
+    
     const hashedPassword = await bcrypt.hash(newpassword, 10);
     user.password = hashedPassword;
     user.resetCode = undefined;
     await user.save();
+    
     return { message: 'Password reset successfully' };
+  }
+
+  async verifyCode(email: string, code: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    if (user.resetCode !== code) {
+      throw new UnauthorizedException('Invalid reset code');
+    }
+    return { message: 'Code verified successfully' };
   }
 }

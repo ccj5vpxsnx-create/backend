@@ -6,8 +6,7 @@ import {
   TicketPriority,
   TicketUrgency,
   TicketImpact,
-  TicketSource,
-} from '../enums/ticket.enum';
+  TicketSource,} from '../enums/ticket.enum';
 import { Category } from './category.shema';
 
 export type TicketDocument = Ticket & Document;
@@ -29,7 +28,6 @@ export class Ticket {
   @Prop({ enum: TicketStatus, default: TicketStatus.NEW })
   status: TicketStatus;
 
-  // Linked Category Entity
   @Prop({ type: Types.ObjectId, ref: 'Category' })
   category?: Types.ObjectId;
 

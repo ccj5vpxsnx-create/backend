@@ -6,12 +6,27 @@ import { CreateTicketDto } from './create-ticket.dto';
 import { PutTicketDto } from './PutTicket.dto';
 import { QueryTicketDto } from './query-ticket.dto';
 
+export interface TicketStatsDto {
+  totalTickets: number;
+  byStatus: {
+    new: number;
+    assigned: number;
+    in_progress: number;
+    waiting: number;
+    resolved: number;
+    closed: number;
+  };
+  unassignedTickets: number;
+  recentTickets: number;
+}
+
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectModel(Ticket.name)
     private ticketModel: Model<TicketDocument>,
   ) { }
+
   async createTicket(createTicketDto: CreateTicketDto) {
     const ticketExiste = await this.ticketModel.findOne({
       title: createTicketDto.title,
@@ -46,7 +61,6 @@ export class TicketsService {
 
     const filter: any = {};
 
-    // Base filters based on role
     if (userType === 'technician') {
       filter.technicianId = new Types.ObjectId(userId);
     } else if (userType === 'user' || userType === 'client') {
@@ -56,13 +70,11 @@ export class TicketsService {
       ];
     }
 
-    // Additional filters from query
     if (status) filter.status = status;
     if (type) filter.type = type;
     if (priority) filter.priority = priority;
     if (category) filter.category = new Types.ObjectId(category);
 
-    // Only apply these if not already restricted by role
     if (query.technicianId && !filter.technicianId) {
       filter.technicianId = new Types.ObjectId(query.technicianId);
     }
@@ -99,6 +111,7 @@ export class TicketsService {
       totalPages: Math.ceil(total / limit),
     };
   }
+
   async findOne(id: string) {
     return this.ticketModel
       .findById(id)
@@ -141,11 +154,28 @@ export class TicketsService {
     if (dto.relatedTicket) {
       ticket.relatedTicket = new Types.ObjectId(dto.relatedTicket);
     }
-
     if (dto.technicianId) {
       ticket.technicianId = new Types.ObjectId(dto.technicianId);
     }
-
     return await ticket.save();
+  }
+
+  async getStats(): Promise<TicketStatsDto> {
+    const totalTickets = await this.ticketModel.countDocuments();
+    const byStatus = {
+      new: await this.ticketModel.countDocuments({ status: 'new' }),
+      assigned: await this.ticketModel.countDocuments({ status: 'assigned' }),
+      in_progress: await this.ticketModel.countDocuments({ status: 'in_progress' }),
+      waiting: await this.ticketModel.countDocuments({ status: 'waiting' }),
+      resolved: await this.ticketModel.countDocuments({ status: 'resolved' }),
+      closed: await this.ticketModel.countDocuments({ status: 'closed' }),
+    };
+    const unassignedTickets = await this.ticketModel.countDocuments({
+      technicianId: { $exists: false },
+    });
+   
+    const recentTickets = await this.ticketModel.countDocuments({
+    });
+    return { totalTickets,byStatus, unassignedTickets, recentTickets,};
   }
 }
