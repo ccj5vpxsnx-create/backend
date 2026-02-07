@@ -23,10 +23,10 @@ export class ConversationsService {
       const ticket = await this.ticketModel.findById(dto.ticketId);
       if (!ticket) throw new NotFoundException('Ticket not found');
 
-      // Add client and technician to participants if they exist
+      // Add client and ADMIN to participants if they exist
       const ticketUsers: string[] = [];
       if (ticket.clientId) ticketUsers.push(ticket.clientId.toString());
-      if (ticket.technicianId) ticketUsers.push(ticket.technicianId.toString());
+      if (ticket.adminId) ticketUsers.push(ticket.adminId.toString());
 
       // Merge with existing participants and de-duplicate
       finalParticipants = [...new Set([...finalParticipants, ...ticketUsers])];

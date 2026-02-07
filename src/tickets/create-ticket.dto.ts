@@ -65,6 +65,11 @@ export class CreateTicketDto {
   @ValidateIf((o) => o.technicianId !== '')
   @IsMongoId()
   technicianId?: string;
+   
+  @IsOptional()
+  @ValidateIf((o) => o.adminId !== '')
+  @IsMongoId()
+  adminId?: string;
 
   @IsOptional()
   @ValidateIf((o) => o.requester !== '')

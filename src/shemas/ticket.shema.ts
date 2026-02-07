@@ -60,10 +60,19 @@ export class Ticket {
   // Technicien assigné
   @Prop({ type: Types.ObjectId, ref: 'User' })
   technicianId?: Types.ObjectId;
+   
+
+  
+  // Administrateur assigné
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  adminId?: Types.ObjectId;
 
   // Créateur du ticket (peut être client, admin, système, etc.)
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   requester: Types.ObjectId;
+
+
+
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

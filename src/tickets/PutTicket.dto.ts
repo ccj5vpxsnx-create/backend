@@ -59,4 +59,9 @@ export class PutTicketDto {
   @ValidateIf((o) => o.technicianId !== '')
   @IsMongoId()
   technicianId?: string;
+
+  @IsOptional()
+  @ValidateIf((o) => o.adminId !== '')
+  @IsMongoId()
+  adminId?: string;
 }

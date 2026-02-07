@@ -46,6 +46,7 @@ export class TicketsService {
       impact: createTicketDto.impact,
       priority: createTicketDto.priority,
       location: createTicketDto.location,
+      adminId: createTicketDto.adminId ? new Types.ObjectId(createTicketDto.adminId) : undefined,
       relatedTicket: createTicketDto.relatedTicket ? new Types.ObjectId(createTicketDto.relatedTicket) : undefined,
       clientId: new Types.ObjectId(createTicketDto.clientId),
       technicianId: createTicketDto.technicianId ? new Types.ObjectId(createTicketDto.technicianId) : undefined,
@@ -150,6 +151,7 @@ export class TicketsService {
     if (dto.impact) ticket.impact = dto.impact;
     if (dto.priority) ticket.priority = dto.priority;
     if (dto.location) ticket.location = dto.location;
+    if (dto.adminId) ticket.adminId = new Types.ObjectId(dto.adminId);
 
     if (dto.relatedTicket) {
       ticket.relatedTicket = new Types.ObjectId(dto.relatedTicket);
